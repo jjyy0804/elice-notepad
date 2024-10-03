@@ -13,8 +13,10 @@ export interface Words {
   id: string;
   text: string;
 }
-const useWords = () => {
+
+const useWords = (search: string) => {
   const [words, setWords] = useState<Words[]>([]);
+  const [filteredWords, setFilteredWords] = useState(words);
   const wordsCollectionRef = collection(db, 'words');
   useEffect(() => {
     const fetchWords = async () => {
@@ -27,7 +29,16 @@ const useWords = () => {
     };
 
     fetchWords();
-  }, [words]);
+  }, []);
+
+  useEffect(() => {
+    const filtered = search
+      ? words.filter((word) => word.text.includes(search))
+      : words;
+    const sorted = filtered.sort((a, b) => a.text.localeCompare(b.text));
+    setFilteredWords(sorted);
+  }, [search, words]);
+
   const addWord = async (text: string) => {
     try {
       const newWord = {
@@ -44,6 +55,6 @@ const useWords = () => {
     console.log('등록');
   };
 
-  return { words, addWord };
+  return { words, addWord, filteredWords };
 };
 export default useWords;

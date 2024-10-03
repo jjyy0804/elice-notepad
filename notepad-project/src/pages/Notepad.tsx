@@ -4,7 +4,8 @@ import useWords from '../hooks/useWords';
 
 const Notepad = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  const { words } = useWords();
+  const [search, setSearch] = useState('');
+  const { words, filteredWords } = useWords(search);
 
   const handleRegisterModalOpen = () => {
     setIsRegisterModalOpen(true);
@@ -36,11 +37,13 @@ const Notepad = () => {
           type="text"
           className="w-full max-w-lg  border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-blue-500 focus:border-transparent"
           placeholder="검색할 단어를 입력하세요."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex justify-center">
           <ul className="max-w-lg w-screen space-y-2">
-            {words && words.length > 0 ? (
-              words.map((word, index) => (
+            {filteredWords && words.length > 0 ? (
+              filteredWords.map((word, index) => (
                 <li className="bg-indigo-300 p-3 rounded-md" key={index}>
                   {word.text}
                 </li>

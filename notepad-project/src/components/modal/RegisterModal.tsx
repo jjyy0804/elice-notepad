@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useWords from '../../hooks/useWords';
 interface ModalProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface ModalProps {
 
 const RegisterModal = ({ isOpen, onClose }: ModalProps) => {
   const [wordInput, setWordInput] = useState('');
-  const { addWord } = useWords();
+  const { addWord } = useWords('');
   const handleConfirmClick = () => {
     addWord(wordInput);
     onClose();
@@ -43,7 +43,8 @@ const RegisterModal = ({ isOpen, onClose }: ModalProps) => {
         />
         <button
           onClick={handleConfirmClick}
-          className="mt-4 bg-blue-500 text-white p-2 rounded-md"
+          className="mt-4 bg-blue-500 text-white p-2 rounded-md disabled:bg-gray-400"
+          disabled={!wordInput.trim()}
         >
           등록
         </button>
