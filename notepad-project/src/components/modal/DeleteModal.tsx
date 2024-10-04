@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import useWords, { Words } from '../../hooks/useWords';
 import ModalContainer from './ModalContainer';
 export interface ModalProps {

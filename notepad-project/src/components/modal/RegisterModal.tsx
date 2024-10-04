@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useWords from '../../hooks/useWords';
 import { ModalProps } from './DeleteModal';
 import ModalContainer from './ModalContainer';
