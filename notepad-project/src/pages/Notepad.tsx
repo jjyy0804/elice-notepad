@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import RegisterModal from '../components/modal/RegisterModal';
 import useWords, { Words } from '../hooks/useWords';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiEdit } from 'react-icons/fi';
 import DeleteModal from '../components/modal/DeleteModal';
 import UpdateModal from '../components/modal/UpdateModal';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../firebaseConfig';
 const Notepad = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedItem, setSeletedItem] = useState<Words>();
   const [search, setSearch] = useState('');
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { words, filteredWords } = useWords(search);
 
   const handleRegisterModalOpen = () => {
@@ -33,9 +37,38 @@ const Notepad = () => {
   const handleUpdateModalClose = () => {
     setIsUpdateModalOpen(false);
   };
+  // 파일 선택 창 열기
+  const handleBackgroundChangeClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // 파일 선택 창 열기
+    }
+  };
+
+  // 파일 선택 후 Firebase Storage에 업로드하고 배경 이미지 변경
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; // 선택된 파일
+    if (!file) return;
+
+    const imageRef = ref(storage, `backgrounds/${file.name}`); // Firebase Storage 경로 설정
+
+    try {
+      // Firebase Storage에 파일 업로드
+      await uploadBytes(imageRef, file);
+      const downloadURL = await getDownloadURL(imageRef);
+      setBackgroundImage(downloadURL);
+      console.log('배경 이미지 업데이트 완료:', downloadURL);
+    } catch (error) {
+      console.error('배경 이미지 업데이트 실패:', error);
+    }
+  };
 
   return (
-    <div className="">
+    <div
+      className="w-screen h-screen bg-cover bg-center"
+      style={{
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      }}
+    >
       <div className="flex  items-center p-9 w-full">
         <div className="flex items-center w-full justify-center relative">
           <p className="font-bold text-2xl text-indigo-700">단어 목록</p>
@@ -46,7 +79,10 @@ const Notepad = () => {
             >
               추가
             </button>
-            <button className="w-auto bg-indigo-500 text-white p-2 rounded-md hover:bg-blue-600 flex-shrink-0">
+            <button
+              className="w-auto bg-indigo-500 text-white p-2 rounded-md hover:bg-blue-600 flex-shrink-0"
+              onClick={handleBackgroundChangeClick}
+            >
               커버 변경
             </button>
           </div>
@@ -98,6 +134,14 @@ const Notepad = () => {
         selectedItem={selectedItem}
         isOpen={isUpdateModalOpen}
         onClose={handleUpdateModalClose}
+      />
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept="image/*"
+        onChange={handleFileChange}
       />
     </div>
   );
