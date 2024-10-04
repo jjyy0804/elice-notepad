@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useWords, { Words } from '../../hooks/useWords';
 import ModalContainer from './ModalContainer';
-interface ModalProps {
+export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedItem?: Words;

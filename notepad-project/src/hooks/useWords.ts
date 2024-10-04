@@ -65,7 +65,18 @@ const useWords = (search: string) => {
     }
     console.log('삭제');
   };
-
-  return { words, addWord, filteredWords, deleteWord };
+  const updateWord = async (id: string, newText: string) => {
+    try {
+      const wordDocRef = doc(db, 'words', id);
+      await updateDoc(wordDocRef, { text: newText });
+      const updatedWords = words.map((word) =>
+        word.id === id ? { ...word, text: newText } : word
+      );
+      setWords(updatedWords);
+    } catch (error) {
+      console.log('단어 수정 실패:', error);
+    }
+  };
+  return { words, addWord, filteredWords, deleteWord, updateWord };
 };
 export default useWords;

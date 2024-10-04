@@ -4,10 +4,12 @@ import useWords, { Words } from '../hooks/useWords';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiEdit } from 'react-icons/fi';
 import DeleteModal from '../components/modal/DeleteModal';
+import UpdateModal from '../components/modal/UpdateModal';
 const Notepad = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedItem, setSeletedItem] = useState<Words | null>(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedItem, setSeletedItem] = useState<Words>();
   const [search, setSearch] = useState('');
   const { words, filteredWords } = useWords(search);
 
@@ -23,6 +25,13 @@ const Notepad = () => {
   };
   const handleDeleteModalClose = () => {
     setIsDeleteModalOpen(false);
+  };
+  const handleUpdateModalOpen = (word: Words) => {
+    setIsUpdateModalOpen(true);
+    setSeletedItem(word);
+  };
+  const handleUpdateModalClose = () => {
+    setIsUpdateModalOpen(false);
   };
 
   return (
@@ -61,7 +70,7 @@ const Notepad = () => {
                 >
                   {word.text}
                   <div className="flex gap-2 text-2xl hidden group-hover:flex text-white">
-                    <button>
+                    <button onClick={() => handleUpdateModalOpen(word)}>
                       <FiEdit />
                     </button>
                     <button onClick={() => handleDeleteModalOpen(word)}>
@@ -81,9 +90,14 @@ const Notepad = () => {
         onClose={handleRegisterModalClose}
       />
       <DeleteModal
-        selectedItem={selectedItem || undefined}
+        selectedItem={selectedItem}
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteModalClose}
+      />
+      <UpdateModal
+        selectedItem={selectedItem}
+        isOpen={isUpdateModalOpen}
+        onClose={handleUpdateModalClose}
       />
     </div>
   );
