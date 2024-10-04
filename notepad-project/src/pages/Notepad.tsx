@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import RegisterModal from '../components/modal/RegisterModal';
-import useWords from '../hooks/useWords';
-
+import useWords, { Words } from '../hooks/useWords';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { FiEdit } from 'react-icons/fi';
+import DeleteModal from '../components/modal/DeleteModal';
 const Notepad = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedItem, setSeletedItem] = useState<Words | null>(null);
   const [search, setSearch] = useState('');
   const { words, filteredWords } = useWords(search);
 
@@ -12,6 +16,13 @@ const Notepad = () => {
   };
   const handleRegisterModalClose = () => {
     setIsRegisterModalOpen(false);
+  };
+  const handleDeleteModalOpen = (word: Words) => {
+    setIsDeleteModalOpen(true);
+    setSeletedItem(word);
+  };
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -44,8 +55,19 @@ const Notepad = () => {
           <ul className="max-w-lg w-screen space-y-2">
             {filteredWords && words.length > 0 ? (
               filteredWords.map((word, index) => (
-                <li className="bg-indigo-300 p-3 rounded-md" key={index}>
+                <li
+                  className="bg-indigo-300 p-3 rounded-md hover:bg-indigo-400 flex justify-between group"
+                  key={index}
+                >
                   {word.text}
+                  <div className="flex gap-2 text-2xl hidden group-hover:flex text-white">
+                    <button>
+                      <FiEdit />
+                    </button>
+                    <button onClick={() => handleDeleteModalOpen(word)}>
+                      <AiOutlineDelete />
+                    </button>
+                  </div>
                 </li>
               ))
             ) : (
@@ -57,6 +79,11 @@ const Notepad = () => {
       <RegisterModal
         isOpen={isRegisterModalOpen}
         onClose={handleRegisterModalClose}
+      />
+      <DeleteModal
+        selectedItem={selectedItem || undefined}
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
       />
     </div>
   );

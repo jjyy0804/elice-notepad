@@ -1,3 +1,4 @@
+import { async } from '@firebase/util';
 import {
   collection,
   addDoc,
@@ -29,7 +30,7 @@ const useWords = (search: string) => {
     };
 
     fetchWords();
-  }, []);
+  }, [words]);
 
   useEffect(() => {
     const filtered = search
@@ -54,7 +55,17 @@ const useWords = (search: string) => {
     }
     console.log('등록');
   };
+  const deleteWord = async (id: string) => {
+    try {
+      const wordDocRef = doc(db, 'words', id);
+      await deleteDoc(wordDocRef);
+      setWords((prevWords) => prevWords.filter((word) => word.id !== id));
+    } catch (error) {
+      console.log('삭제 실패', error);
+    }
+    console.log('삭제');
+  };
 
-  return { words, addWord, filteredWords };
+  return { words, addWord, filteredWords, deleteWord };
 };
 export default useWords;
